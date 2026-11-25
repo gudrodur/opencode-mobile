@@ -28,13 +28,16 @@ internal object HomeBranchWindow {
         if (worktrees.isEmpty()) return emptyList()
         val known = worktrees.map { it.directory }.toSet()
         val mains = worktrees.filter { it.isMain }.map { it.directory }
+        val rows =
+            sections.flatMap { section -> section.allSessions.map { section.worktree to it } } +
+                extraSessions.flatMap { (directory, sessions) -> sessions.map { directory to it } }
         val rowDirectories =
-            (sections.flatMap { section -> section.allSessions.map { section.worktree to it } } +
-                extraSessions.flatMap { (directory, sessions) -> sessions.map { directory to it } })
+            rows
                 .sortedByDescending { (_, summary) -> summary.updatedAtEpochMs ?: Long.MIN_VALUE }
                 .take(VISIBLE_ROWS)
-                .map { (listed, summary) -> ServerPathPolicy.canonical((summary.directory?.takeIf { it.isNotBlank() } ?: listed).trim()) }
-                .filter { it in known }
+                .map { (listed, summary) ->
+                    ServerPathPolicy.canonical((summary.directory?.takeIf { it.isNotBlank() } ?: listed).trim())
+                }.filter { it in known }
         return (mains + rowDirectories).distinct()
     }
 }
