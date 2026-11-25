@@ -132,6 +132,8 @@ android {
 
     buildTypes {
         debug {
+            // Installs beside the store app instead of replacing it (the label is in src/debug/res).
+            applicationIdSuffix = ".debug"
             // en-XA (long text) and ar-XB (right-to-left) pseudo-locales for layout checks.
             isPseudoLocalesEnabled = true
         }
